@@ -13,9 +13,9 @@
 
 
 void generateLevel() {
-	for(int y=0; y<20; y++) {
-		for(int x=0; y<3; y++) {
-			EntityCreate("res/block.jpg", TYPE_BLOCK, x*20, y*10);
+	for(int y=0; y<3; y++) {
+		for(int x=0; x<20; x++) {
+			EntityCreate("res/block.jpg", TYPE_BLOCK, x*32, y*22);
 		}
 	}
 }

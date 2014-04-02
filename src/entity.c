@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <math.h>
-#include <windows.h>
+#ifdef _WIN32
+	#include <windows.h>
+#endif
 
 #include <SDL.h>
 #include <SDL2/SDL_image.h>
