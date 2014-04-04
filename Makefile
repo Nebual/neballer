@@ -1,6 +1,6 @@
 EXECUTABLE=neballer
 EXTRAHEADERS=
-EXTRALIBS=-lSDL2_image -lm -lSDL2_mixer
+EXTRALIBS=-lSDL2_image -lm -lSDL2_mixer -lSDL2_ttf
 
 #SOURCES=src/main.c $(wildcard src/*.c)
 #SOURCES=src/entity.c src/input.c src/main.c src/system.c src/util.c src/hud.c
@@ -11,14 +11,14 @@ F=main
 CC=gcc
 
 
-debug: CFLAGS +=-DDEBUG -g
-warn: CFLAGS += -Wall
+debug: EXTRACFLAGS +=-DDEBUG -g
+warn: EXTRACFLAGS += -Wall
 
 # Targetting Windows x64
 win32: CC:=x86_64-w64-mingw32-gcc
 win32: EXECUTABLE:=$(EXECUTABLE).exe
-win32: CFLAGS=-I$(WINFOLDER)include/SDL2 -Dmain=SDL_main $(C99MODE)
-win32: LIBS=-L$(WINFOLDER)lib -lmingw32 -mwindows -lSDL2main -lSDL2 $(EXTRALIBS)
+win32: CFLAGS=-I$(WINFOLDER)include/SDL2 -Dmain=SDL_main $(C99MODE) $(EXTRACFLAGS)
+win32: LIBS=-L$(WINFOLDER)lib -lmingw32 -lSDL2main -lSDL2 $(EXTRALIBS)
 
 
 ifeq ($(OS),Windows_NT)
@@ -33,7 +33,7 @@ run: win32
 else
 # Building on Linux
 WINFOLDER:=/usr/x86_64-w64-mingw32/
-CFLAGS:=$(shell sdl2-config --cflags) $(C99MODE)
+CFLAGS:=$(shell sdl2-config --cflags) $(C99MODE) $(EXTRACFLAGS)
 LIBS=$(shell sdl2-config --libs) $(EXTRALIBS)
 
 all: compile
