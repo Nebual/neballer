@@ -3,16 +3,20 @@ Neballer
 
 Breakout clone; mostly just a learning experience for C and SDL
 
+
+![v0.1](https://github.com/Nebual/neballer/releases/download/v0.1/v0.1.png)
+
 # Running on Windows
-* You'll need SDL2's DLLs, I've a [tidy zip for Windows x64](https://github.com/Nebual/nebual.github.io/raw/master/sdl2_win64.zip)
+* You'll need SDL2, I've a [zip of Windows x64 dlls](https://github.com/Nebual/nebual.github.io/raw/master/sdl2_win64.zip)
+* Or, a [full zip](https://github.com/Nebual/neballer/releases/download/v0.1/neballer_win64_v0.1.zip) including dlls and game assets
 
 # Dependancies
 * SDL2, SDL2_image, SDL2_mixer, SDL2_ttf
 
-## Linux Dependancies
+### Linux Dependancies
 * sudo apt-get install libsdl2-2.0-0 libsdl2-dev libsdl2-image-2.0-0 libsdl2-mixer-2.0-0 libsdl2-ttf-2.0-0 libsdl2-mixer-dev libsdl2-image-dev libsdl2-ttf-dev
 
-## Windows Dependancies: 
+### Windows Dependancies: 
 * Get the MinGW64 toolkit ( http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/4.8.2/threads-win32/seh/ works)
 * Extract it to C:/MinGW64
 * Add C:/MinGW64/bin to your path
