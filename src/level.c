@@ -10,12 +10,59 @@
 #include "entity.h"
 #include "main.h"
 #include "level.h"
+#include "util.h"
 
+int curLevel;
+int balls = 3;
+Entity *ballInPlay;
 
-void generateLevel() {
-	for(int y=0; y<3; y++) {
-		for(int x=0; x<20; x++) {
-			EntityCreate("res/block.jpg", TYPE_BLOCK, x*32, y*22);
+void checkWinLoss(){
+	if(balls <= 0 && ballInPlay == NULL){
+		printf("You've dropped the bar far too many times to bother trying again. You lose!\n");
+		quit = 1;
+	} else if (countBricks() == 0){
+		Mix_Chunk *victorysound = Mix_LoadWAV("res/victory.ogg");
+		playSound(victorysound);
+		
+		EntityRemove(ballInPlay);
+		ballInPlay = NULL;
+		balls++;
+		
+		curLevel++;
+		generateLevel(curLevel);
+	}
+}
+
+int countBricks(){
+	int bricks = 0;
+	for(int i=0; i < entsC; i++){
+		if(ents[i] == NULL) continue;
+		if(ents[i]->type == TYPE_BLOCK){
+			bricks++;
+		}
+	}
+	return bricks;
+}
+
+void generateLevel(int level) {
+	curLevel = level;
+	char filename[5];
+	char line[18];
+	sprintf(filename, "levels/%d.lvl", level);
+	if(DEBUG) printf("Reading file %s\n", filename);
+	
+	FILE *fp = fopen(filename, "r");
+	if(!fp) {
+		printf("%s not found, you've completed the last level!\n", filename);
+		quit = 1;
+	}
+	
+	for(int y=0; fgets(line, sizeof(line), fp); y++) {
+		if(DEBUG) printf("Read line: %s", line);
+		for(int x=0; x<16; x++) {
+			if(line[x] == '=') {
+				EntityCreate("res/block.png", TYPE_BLOCK, x*50, y*25);
+			}
 		}
 	}
 }

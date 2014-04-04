@@ -38,25 +38,20 @@ void handleKeyboard(double dt, Entity *ply) {
 				keysPressed[keyevent.key.keysym.scancode] = 0;
 				
 				switch(keyevent.key.keysym.sym) {
+					case SDLK_SPACE:
+						GenBall(ply);
+						break;
 				}
 		}
 	}
 	
-	if(keysPressed[SDL_SCANCODE_W] || keysPressed[SDL_SCANCODE_UP]) {
-		EntityThrust(ply, 1, dt);
-	}
-	if(keysPressed[SDL_SCANCODE_S] || keysPressed[SDL_SCANCODE_DOWN]) {
-		EntityThrust(ply, -1, dt);
-	}
-	ply->avel = 0;
+	ply->vel.x = 0;
+	
 	if(keysPressed[SDL_SCANCODE_A] || keysPressed[SDL_SCANCODE_LEFT]) {
-		ply->avel = -ply->athrust;
+		ply->vel.x = -300;
 	}
 	else if(keysPressed[SDL_SCANCODE_D] || keysPressed[SDL_SCANCODE_RIGHT]) {
-		ply->avel = ply->athrust;
-	}
-	if(keysPressed[SDL_SCANCODE_SPACE]) {
-		//ShipShoot(ply);
+		ply->vel.x = 300;
 	}
 
 	//camera->x += keysPressed[SDL_SCANCODE_L] - keysPressed[SDL_SCANCODE_J];

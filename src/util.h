@@ -1,3 +1,5 @@
+#ifndef __UTIL_H
+#define __UTIL_H
 
 int curtime();
 int curtime_u();
@@ -10,3 +12,6 @@ double clamp(double val, double min, double max);
 double angnorm(double ang);
 void fpsCounter();
 void playSound(Mix_Chunk *snd);
+int random_range(int min, int max);
+
+#endif

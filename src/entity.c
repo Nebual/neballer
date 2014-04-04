@@ -12,14 +12,14 @@
 #include "util.h"
 #include "entity.h"
 #include "main.h"
-
+#include "level.h"
 
 static TextureData explosion2;
 static Mix_Chunk *shootRocket1;
 void initTextures() {
-	explosion2.texture = IMG_LoadTexture(renderer, "res/explosion_128.png");
+	explosion2.texture = IMG_LoadTexture(renderer, "res/explosion_50.png");
 	explosion2.animMaxFrames = 36;
-	explosion2.w = 128; explosion2.h = 128;
+	explosion2.w = 50; explosion2.h = 50;
 	explosion2.animWidth = 8;
 	explosion2.animDuration = 2;
 
@@ -32,13 +32,15 @@ Entity* EntityCreate(char texturePath[], Type type, int x, int y) {
 	this->texture = IMG_LoadTexture(renderer, texturePath);
 	if (!this->texture) {fprintf(stderr, "Couldn't load %s: %s\n", texturePath, SDL_GetError());}
 	//if(type == TYPE_PLANET) {SDL_SetTextureBlendMode(this->texture, SDL_BLENDMODE_ADD);} // ??? For some reason, planets render better with add, yet nothing else does
-	if(this->type != TYPE_BALL && this->type != TYPE_PLAYER) {SDL_SetTextureBlendMode(this->texture, SDL_BLENDMODE_ADD);}
-	this->rect = (SDL_Rect) {0,0,0,0};
+	//if(this->type != TYPE_BALL && this->type != TYPE_PLAYER) {SDL_SetTextureBlendMode(this->texture, SDL_BLENDMODE_ADD);}
+	SDL_SetTextureBlendMode(this->texture, SDL_BLENDMODE_BLEND);
+	this->rect = (SDL_Rect) {x,y,0,0};
 	int format;
 	SDL_QueryTexture(this->texture, &format, NULL, &this->rect.w, &this->rect.h);
 	//printf("Texture %s: %d\n", texturePath, format);
 	
-	this->pos = (Vector) {x + this->rect.w/2,y + this->rect.w/2};
+	//this->pos = (Vector) {x + this->rect.w/2,y + this->rect.w/2};
+	this->pos = (Vector) {x,y};
 	this->ang = 0;
 	this->vel = (Vector) {0,0};
 	this->avel = 0;
@@ -55,7 +57,6 @@ Entity* EntityCreate(char texturePath[], Type type, int x, int y) {
 	this->animTime = 0;
 	this->animDuration = 0;
 	this->animMaxFrames = 0;
-	this->faction = FRIENDLY;
 	switch(type) {
 		case TYPE_PLAYER:
 			this->collision = 1;
@@ -68,7 +69,7 @@ Entity* EntityCreate(char texturePath[], Type type, int x, int y) {
 			this->collision = 1;
 			this->thrust = 250;
 			this->maxSpeed = 800;
-			this->damage = 25;
+			this->damage = 100;
 			this->collisionSize = min(this->rect.w, this->rect.h) / 2;
 			break;
 		//default:
@@ -129,21 +130,54 @@ void EntityUpdate(Entity *ent, double dt) {
 		return EntityRemove(ent);
 	}
 	switch(ent->type) {
-		case TYPE_BALL:
-			EntityThrust(ent, 1, dt);
+		case TYPE_BALL: {
 			EntityMovement(ent, dt);
 			
 			Entity *hit = TestCollision(ent);
 			if(hit != NULL) {
+				if(DEBUG) printf("Collision Occured: PosX %.3f, PosY: %.3f, Block (%.2f, %.2f), CollisionSizes (%d, %d), distance: %.2f\n", ent->pos.x, ent->pos.y, hit->pos.x, hit->pos.y, ent->collisionSize, hit->collisionSize, EntityDistance(hit, ent));
 				EntityDamage(hit, ent->damage);
-				EntityRemove(ent);
-				return;
+				ent->vel.y = abs(ent->vel.y) * sign(ent->pos.y - hit->pos.y);
+				
+				if(hit->type == TYPE_PLAYER){
+					ent->vel.x += hit->vel.x * 0.1;
+				}
 			}
 			
 			break;
-		case TYPE_PLAYER:
+		} case TYPE_PLAYER:
 			EntityMovement(ent, dt);
 			break;
+	}
+	if((ent->pos.x + ent->rect.w) > WIDTH){
+		if(ent->type == TYPE_BALL){
+			if(ent->vel.x > 0){
+				ent->vel.x *= -1;
+			}
+		}else if(ent->type ==TYPE_PLAYER){
+			ent->pos.x = WIDTH - ent->rect.w;
+		}
+	}
+	else if(ent->pos.x < 0){
+		if(ent->type == TYPE_BALL){
+			if(ent->vel.x < 0){
+				ent->vel.x *= -1;
+			}
+		}
+		if(ent->type == TYPE_PLAYER){
+			ent->pos.x = 0;
+		}
+	}
+	
+	if((ent->pos.y + ent->rect.h) > HEIGHT){
+		if(ent->type == TYPE_BALL){
+			EntityRemove(ent);
+			ballInPlay = NULL;
+		}
+	}else if (ent->pos.y < 0){
+		if(ent->vel.y < 0){
+			ent->vel.y *= -1;
+		}
 	}
 }
 void EntityMovement(Entity *ent, double dt) {
@@ -162,10 +196,18 @@ void EntityThrust(Entity *ent, double mul, double dt) {
 }
 Entity* TestCollision(Entity *ent) {
 	for(int i=0; i<entsC; i++) {
-		if(ents[i] == NULL || ents[i]->collision == 0) continue;
-		if(ent->owner == ents[i]) continue;
-		//if(ent->rect.x + ent->rect.w  < ents[i]->rect.x ) continue;
-		if(EntityDistance(ents[i], ent) < (ents[i]->collisionSize + ent->collisionSize)) {return ents[i];}
+		if(ents[i] == NULL || ents[i]->collision == 0 || ent == ents[i]) continue;
+		if(ent->owner == ents[i] || ents[i]->type == TYPE_BALL) continue;
+		
+		// Rect collisions
+		double maxX = max(ents[i]->pos.x, ent->pos.x);
+		double minX = min(ents[i]->pos.x + ents[i]->rect.w, ent->pos.x + ent->rect.w);
+		double maxY = max(ents[i]->pos.y, ent->pos.y);
+		double minY = min(ents[i]->pos.y + ents[i]->rect.h, ent->pos.y + ent->rect.h);
+		if(maxX < minX && maxY < minY) {return ents[i];}
+		
+		// Happy fun Circle collisions :D :D
+		//if(EntityDistance(ents[i], ent) < (ents[i]->collisionSize + ent->collisionSize)) {return ents[i];}
 	}
 	return NULL;
 }
@@ -177,14 +219,12 @@ void EntityDamage(Entity *ent, int damage) {
 		ent->type = TYPE_EXPLOSION;
 		ent->texture = explosion2.texture;
 		ent->rect.w = explosion2.w; ent->rect.h = explosion2.h;
+		ent->pos.y -= 12;
 		ent->animDuration = explosion2.animDuration;
 		ent->animMaxFrames = explosion2.animMaxFrames;
 		ent->collision = 0;
 		
 		EntityDeathClock(ent, explosion2.animDuration * 1000);
-	}
-	if(ent->faction == FRIENDLY) {
-		ent->faction = HOSTILE;
 	}
 }
 void EntityDeathClock(Entity *ent, int delay) {
@@ -199,4 +239,12 @@ void ShipBrake(Entity *ent, double dt) {
 
 double EntityDistance(Entity *ent1, Entity *ent2) {
 	return pow(pow(ent1->rect.x - ent2->rect.x, 2) + powf(ent1->rect.y - ent2->rect.y, 2), 0.5);
+}
+
+void GenBall(Entity *ent){
+	if(ballInPlay != NULL || balls < 0) return;
+	ballInPlay = EntityCreate("res/ball.png", TYPE_BALL, ent->pos.x, (ent->pos.y - 50));
+	ballInPlay->vel.x = random_range(-150, 150);
+	ballInPlay->vel.y = -300;
+	balls--;
 }

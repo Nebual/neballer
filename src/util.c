@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include <SDL2/SDL_mixer.h>
 
@@ -47,6 +48,10 @@ int curtime_u() {
 	static struct timeval curtime;
 	gettimeofday(&curtime, NULL);
 	return curtime.tv_usec;
+}
+
+int random_range(int min, int max){
+	return rand() % (max-min) + min;
 }
 
 void playSound(Mix_Chunk *snd) {

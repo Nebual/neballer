@@ -32,18 +32,18 @@ int main(int argc, char *argv[]) {
 	static SDL_Window *window;
 	if(initWindow(&window, &renderer, argc, argv)) return 1;
 	initVariables(WIDTH, HEIGHT);
-	//initTextures();
+	initTextures();
 	//initHUD();
 
-	generateLevel();
+	generateLevel(1);
 
-	ply = EntityCreate("res/viper_100.png", TYPE_PLAYER, 30, 30);
+	ply = EntityCreate("res/plank.png", TYPE_PLAYER, WIDTH/2 - 50, HEIGHT - 36);
 	
 	SDL_Rect *camera = &(SDL_Rect) {0,0,0,0};
 	int lastFrame = curtime_u() - 1;
 	double dt;
 	while(!quit) {
-		//if(DEBUG) fpsCounter();
+		if(DEBUG) fpsCounter();
 
 		// Calculate dt
 		int curFrame = curtime_u();
@@ -60,6 +60,10 @@ int main(int argc, char *argv[]) {
 		}
 		
 		// ====================
+		// Win/Loss conditions
+		checkWinLoss();
+		
+		// ====================
 		// Drawing
 		drawBackground(renderer, dt);
 		for(int enti=0; enti<entsC; enti++) {
@@ -71,7 +75,8 @@ int main(int argc, char *argv[]) {
 		// Flip render buffer
 		SDL_RenderPresent(renderer);
 		
-		//SDL_Delay(20);
+		// Frame limiting, not needed if we're using vsync
+		//SDL_Delay((1000 / 66) - (curtime_u() - lastFrame)/1000);
 	}
 	printf("\nShutting down...\n");
 
@@ -101,10 +106,12 @@ int initWindow(SDL_Window **window, SDL_Renderer **renderer, int argc, char *arg
 		return 1;
 	}
 
-	SDL_DisplayMode displayInfo;
+	/*SDL_DisplayMode displayInfo;
 	SDL_GetCurrentDisplayMode(0, &displayInfo); 
 	WIDTH = displayInfo.w;
-	HEIGHT = displayInfo.h;
+	HEIGHT = displayInfo.h;*/
+	WIDTH = 800;
+	HEIGHT = 600;
 	
 	int flags=IMG_INIT_JPG|IMG_INIT_PNG;
 	if(IMG_Init(flags) != flags) {
@@ -148,7 +155,7 @@ int initWindow(SDL_Window **window, SDL_Renderer **renderer, int argc, char *arg
 		printf("\n");*/
 	}
 	
-	*window = SDL_CreateWindow("Drifter", SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_BORDERLESS);
+	*window = SDL_CreateWindow("Neballer", SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, 0); // SDL_WINDOW_BORDERLESS
 											//  -1 for first rendering driver that fits the flags
 	if(useSoftwareAccel || (*renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)) == NULL) {
 		fprintf(stderr, "Loading hardware acceleration failed. Using software fallback...\n");

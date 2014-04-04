@@ -14,12 +14,6 @@ typedef enum {
 	TYPE_MAX
 } Type;
 
-typedef enum {
-	FRIENDLY,
-	HOSTILE,
-	
-} Faction;
-	
 typedef struct entity {
 	Vector vel;
 	double ang;
@@ -41,7 +35,6 @@ typedef struct entity {
 	short int animMaxFrames;
 
 	short int health;			// Ships
-	Faction faction;
 
 	int type;
 } Entity;
@@ -68,7 +61,7 @@ Entity* TestCollision(Entity *ent);
 void EntityDamage(Entity *ent, int damage);
 void EntityDeathClock(Entity * ent, int delay);
 void ShipBrake(Entity *ent, double dt);
-void ShipShoot(Entity *ent);
+void GenBall(Entity *ent);
 double EntityDistance(Entity *ent1, Entity *ent2);
 
 
