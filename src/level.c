@@ -21,8 +21,8 @@ void checkWinLoss(){
 		printf("You've dropped the bar far too many times to bother trying again. You lose!\n");
 		quit = 1;
 	} else if (countBricks() == 0){
-		Mix_Chunk *victorysound = Mix_LoadWAV("res/victory.ogg");
-		playSound(victorysound);
+		Mix_Chunk *victorySound = Mix_LoadWAV("res/sounds/victory.ogg");
+		playSound(victorySound);
 		
 		EntityRemove(ballInPlay);
 		ballInPlay = NULL;

@@ -120,7 +120,7 @@ int initWindow(SDL_Window **window, SDL_Renderer **renderer, int argc, char *arg
 	}
 
 	#ifndef __arm__
-	if(Mix_OpenAudio( MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1) {
+	if(Mix_OpenAudio( MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024 ) == -1) {
 		fprintf(stderr, "Audio Init failed: %s\n", Mix_GetError());
 		return 1;
 	}

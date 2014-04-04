@@ -15,7 +15,9 @@
 #include "level.h"
 
 static TextureData explosion2;
-static Mix_Chunk *shootRocket1;
+static Mix_Chunk *bounceSound;
+static Mix_Chunk *hitSounds[3];
+static Mix_Chunk *failSound;
 void initTextures() {
 	explosion2.texture = IMG_LoadTexture(renderer, "res/explosion_50.png");
 	explosion2.animMaxFrames = 36;
@@ -23,7 +25,11 @@ void initTextures() {
 	explosion2.animWidth = 8;
 	explosion2.animDuration = 2;
 
-	shootRocket1 = Mix_LoadWAV("res/shootRocket1.ogg");
+	bounceSound = Mix_LoadWAV("res/sounds/bounce.ogg");
+	hitSounds[0] = Mix_LoadWAV("res/sounds/hit1.wav");
+	hitSounds[1] = Mix_LoadWAV("res/sounds/hit2.wav");
+	hitSounds[2] = Mix_LoadWAV("res/sounds/hit3.wav");
+	failSound = Mix_LoadWAV("res/sounds/fail.ogg");
 }
 
 Entity* EntityCreate(char texturePath[], Type type, int x, int y) {
@@ -136,12 +142,16 @@ void EntityUpdate(Entity *ent, double dt) {
 			Entity *hit = TestCollision(ent);
 			if(hit != NULL) {
 				if(DEBUG) printf("Collision Occured: PosX %.3f, PosY: %.3f, Block (%.2f, %.2f), CollisionSizes (%d, %d), distance: %.2f\n", ent->pos.x, ent->pos.y, hit->pos.x, hit->pos.y, ent->collisionSize, hit->collisionSize, EntityDistance(hit, ent));
-				EntityDamage(hit, ent->damage);
 				ent->vel.y = abs(ent->vel.y) * sign(ent->pos.y - hit->pos.y);
 				
 				if(hit->type == TYPE_PLAYER){
 					ent->vel.x += hit->vel.x * 0.1;
+					playSound(bounceSound);
 				}
+				else if(hit->type == TYPE_BLOCK) {
+					playSound(hitSounds[rand() % 3]);
+				}
+				EntityDamage(hit, ent->damage);
 			}
 			
 			break;
@@ -173,6 +183,7 @@ void EntityUpdate(Entity *ent, double dt) {
 		if(ent->type == TYPE_BALL){
 			EntityRemove(ent);
 			ballInPlay = NULL;
+			playSound(failSound);
 		}
 	}else if (ent->pos.y < 0){
 		if(ent->vel.y < 0){
