@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 
 	generateLevel(1);
 
-	ply = EntityCreate("res/plank.png", TYPE_PLAYER, WIDTH/2 - 50, HEIGHT - 36);
+	ply = EntityCreate(TextureDataCreate("res/plank.png"), TYPE_PLAYER, WIDTH/2 - 50, HEIGHT - 36);
 	
 	SDL_Rect *camera = &(SDL_Rect) {0,0,0,0};
 	int lastFrame = curtime_u() - 1;

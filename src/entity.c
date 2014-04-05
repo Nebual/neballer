@@ -14,16 +14,21 @@
 #include "main.h"
 #include "level.h"
 
-static TextureData explosion2;
+TextureData ballTD;
+TextureData blockTD;
+TextureData explosionTD;
 static Mix_Chunk *bounceSound;
 static Mix_Chunk *hitSounds[3];
 static Mix_Chunk *failSound;
 void initTextures() {
-	explosion2.texture = IMG_LoadTexture(renderer, "res/explosion_50.png");
-	explosion2.animMaxFrames = 36;
-	explosion2.w = 50; explosion2.h = 50;
-	explosion2.animWidth = 8;
-	explosion2.animDuration = 2;
+	ballTD = TextureDataCreate("res/ball.png");
+	blockTD = TextureDataCreate("res/block.png");
+
+	explosionTD.texture = IMG_LoadTexture(renderer, "res/explosion_50.png");
+	explosionTD.animMaxFrames = 36;
+	explosionTD.w = 50; explosionTD.h = 50;
+	explosionTD.animWidth = 8;
+	explosionTD.animDuration = 2;
 
 	bounceSound = Mix_LoadWAV("res/sounds/bounce.ogg");
 	hitSounds[0] = Mix_LoadWAV("res/sounds/hit1.wav");
@@ -32,18 +37,21 @@ void initTextures() {
 	failSound = Mix_LoadWAV("res/sounds/fail.ogg");
 }
 
-Entity* EntityCreate(char texturePath[], Type type, int x, int y) {
+TextureData TextureDataCreate(char texturePath[]) {
+	TextureData this = {NULL, 0, 0, 0, 0, 0};
+	this.texture = IMG_LoadTexture(renderer, texturePath);
+	if (!this.texture) {fprintf(stderr, "Couldn't load %s: %s\n", texturePath, SDL_GetError());}
+	SDL_SetTextureBlendMode(this.texture, SDL_BLENDMODE_BLEND);
+	SDL_QueryTexture(this.texture, NULL, NULL, &this.w, &this.h);
+	
+	return this;
+}
+
+Entity* EntityCreate(TextureData texdata, Type type, int x, int y) {
 	Entity* this = (Entity *) malloc(sizeof(Entity));
 	
-	this->texture = IMG_LoadTexture(renderer, texturePath);
-	if (!this->texture) {fprintf(stderr, "Couldn't load %s: %s\n", texturePath, SDL_GetError());}
-	SDL_SetTextureBlendMode(this->texture, SDL_BLENDMODE_BLEND);
-	this->rect = (SDL_Rect) {x,y,0,0};
-	int format;
-	SDL_QueryTexture(this->texture, &format, NULL, &this->rect.w, &this->rect.h);
-	//printf("Texture %s: %d\n", texturePath, format);
-	
-	//this->pos = (Vector) {x + this->rect.w/2,y + this->rect.w/2};
+	this->texture = texdata.texture;
+	this->rect = (SDL_Rect) {x,y,texdata.w,texdata.h};
 	this->pos = (Vector) {x,y};
 	this->ang = 0;
 	this->vel = (Vector) {0,0};
@@ -76,7 +84,6 @@ Entity* EntityCreate(char texturePath[], Type type, int x, int y) {
 			this->damage = 100;
 			this->collisionSize = min(this->rect.w, this->rect.h) / 2;
 			break;
-		//default:
 	}
 	
 	ents[entsC] = this; entsC++;
@@ -209,14 +216,14 @@ void EntityDamage(Entity *ent, int damage) {
 	ent->health -= damage;
 	if(ent->health <= 0) {
 		ent->type = TYPE_EXPLOSION;
-		ent->texture = explosion2.texture;
-		ent->rect.w = explosion2.w; ent->rect.h = explosion2.h;
+		ent->texture = explosionTD.texture;
+		ent->rect.w = explosionTD.w; ent->rect.h = explosionTD.h;
 		ent->pos.y -= 12;
-		ent->animDuration = explosion2.animDuration;
-		ent->animMaxFrames = explosion2.animMaxFrames;
+		ent->animDuration = explosionTD.animDuration;
+		ent->animMaxFrames = explosionTD.animMaxFrames;
 		ent->collision = 0;
 		
-		EntityDeathClock(ent, explosion2.animDuration * 1000);
+		EntityDeathClock(ent, explosionTD.animDuration * 1000);
 	}
 }
 void EntityDeathClock(Entity *ent, int delay) {
@@ -229,7 +236,7 @@ double EntityDistance(Entity *ent1, Entity *ent2) {
 
 void GenBall(Entity *ent){
 	if(ballInPlay != NULL || balls < 0) return;
-	ballInPlay = EntityCreate("res/ball.png", TYPE_BALL, ent->pos.x, (ent->pos.y - 50));
+	ballInPlay = EntityCreate(ballTD, TYPE_BALL, ent->pos.x, (ent->pos.y - 50));
 	ballInPlay->vel.x = random_range(-150, 150);
 	ballInPlay->vel.y = -300;
 	balls--;

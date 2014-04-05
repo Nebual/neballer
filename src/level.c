@@ -62,7 +62,7 @@ void generateLevel(int level) {
 		if(DEBUG) printf("Read line: %s", line);
 		for(int x=0; x<16; x++) {
 			if(line[x] == '=') {
-				EntityCreate("res/block.png", TYPE_BLOCK, x*50, y*25);
+				EntityCreate(blockTD, TYPE_BLOCK, x*50, y*25);
 			}
 		}
 	}

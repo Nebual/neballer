@@ -44,13 +44,17 @@ typedef struct {
 	short int animMaxFrames;
 	short int animWidth;
 	short int animDuration;
-	short int w;
-	short int h;
+	int w;
+	int h;
 } TextureData;
 
-void initTextures();
 
-Entity* EntityCreate(char texturePath[], Type type, int x,int y);
+extern TextureData blockTD;
+
+
+void initTextures();
+TextureData TextureDataCreate(char texturePath[]);
+Entity* EntityCreate(TextureData texdata, Type type, int x,int y);
 void EntityRemove(Entity *ent);
 void EntityDraw(Entity *ent, SDL_Rect *camera, double dt);
 void EntityUpdate(Entity *ent, double dt);
