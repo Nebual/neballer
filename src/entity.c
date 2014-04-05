@@ -37,8 +37,6 @@ Entity* EntityCreate(char texturePath[], Type type, int x, int y) {
 	
 	this->texture = IMG_LoadTexture(renderer, texturePath);
 	if (!this->texture) {fprintf(stderr, "Couldn't load %s: %s\n", texturePath, SDL_GetError());}
-	//if(type == TYPE_PLANET) {SDL_SetTextureBlendMode(this->texture, SDL_BLENDMODE_ADD);} // ??? For some reason, planets render better with add, yet nothing else does
-	//if(this->type != TYPE_BALL && this->type != TYPE_PLAYER) {SDL_SetTextureBlendMode(this->texture, SDL_BLENDMODE_ADD);}
 	SDL_SetTextureBlendMode(this->texture, SDL_BLENDMODE_BLEND);
 	this->rect = (SDL_Rect) {x,y,0,0};
 	int format;
@@ -123,21 +121,39 @@ void EntityDraw(Entity *ent, SDL_Rect *camera, double dt) {
 	ent->rect.x = ent->pos.x - camera->x;
 	ent->rect.y = ent->pos.y - camera->y;
 	int ret;
-	if(ent->type == TYPE_BALL || ent->type == TYPE_PLAYER) { // For some reason, it didn't like switching between the methods on a per-entity basis (using ent->ang != 0)
-		ret = SDL_RenderCopyEx(renderer, ent->texture, EntityGetFrame(ent, dt), &ent->rect, ent->ang, NULL, SDL_FLIP_NONE);
-	} else{
+	//if(ent->type == TYPE_BALL || ent->type == TYPE_PLAYER) { // For some reason, it didn't like switching between the methods on a per-entity basis (using ent->ang != 0)
+	//	ret = SDL_RenderCopyEx(renderer, ent->texture, EntityGetFrame(ent, dt), &ent->rect, ent->ang, NULL, SDL_FLIP_NONE);
+	//} else{
 		ret = SDL_RenderCopy(renderer, ent->texture, EntityGetFrame(ent, dt), &ent->rect);
-	}
+	//}
 	if(ret != 0) {printf("Render failed: %s\n", SDL_GetError());}
 }
 void EntityUpdate(Entity *ent, double dt) {
-	static struct timeval curtime;
 	if(ent->deathTime != 0 && ent->deathTime < SDL_GetTicks()) {
 		return EntityRemove(ent);
 	}
 	switch(ent->type) {
 		case TYPE_BALL: {
 			EntityMovement(ent, dt);
+			
+			if((ent->pos.x + ent->rect.w) > WIDTH) {
+				if(ent->vel.x > 0) {
+					ent->vel.x *= -1;
+				}
+			} else if(ent->pos.x < 0) {
+				if(ent->vel.x < 0) {
+					ent->vel.x *= -1;
+				}
+			}
+			if((ent->pos.y + ent->rect.h) > HEIGHT) {
+				EntityRemove(ent);
+				ballInPlay = NULL;
+				playSound(failSound);
+			} else if (ent->pos.y < 0){
+				if(ent->vel.y < 0){
+					ent->vel.y *= -1;
+				}
+			}
 			
 			Entity *hit = TestCollision(ent);
 			if(hit != NULL) {
@@ -147,8 +163,7 @@ void EntityUpdate(Entity *ent, double dt) {
 				if(hit->type == TYPE_PLAYER){
 					ent->vel.x += hit->vel.x * 0.1;
 					playSound(bounceSound);
-				}
-				else if(hit->type == TYPE_BLOCK) {
+				} else if(hit->type == TYPE_BLOCK) {
 					playSound(hitSounds[rand() % 3]);
 				}
 				EntityDamage(hit, ent->damage);
@@ -157,53 +172,19 @@ void EntityUpdate(Entity *ent, double dt) {
 			break;
 		} case TYPE_PLAYER:
 			EntityMovement(ent, dt);
+			if((ent->pos.x + ent->rect.w) > WIDTH) {
+				ent->pos.x = WIDTH - ent->rect.w;
+			}
+			else if(ent->pos.x < 0) {
+				ent->pos.x = 0;
+			}
 			break;
-	}
-	if((ent->pos.x + ent->rect.w) > WIDTH){
-		if(ent->type == TYPE_BALL){
-			if(ent->vel.x > 0){
-				ent->vel.x *= -1;
-			}
-		}else if(ent->type ==TYPE_PLAYER){
-			ent->pos.x = WIDTH - ent->rect.w;
-		}
-	}
-	else if(ent->pos.x < 0){
-		if(ent->type == TYPE_BALL){
-			if(ent->vel.x < 0){
-				ent->vel.x *= -1;
-			}
-		}
-		if(ent->type == TYPE_PLAYER){
-			ent->pos.x = 0;
-		}
-	}
-	
-	if((ent->pos.y + ent->rect.h) > HEIGHT){
-		if(ent->type == TYPE_BALL){
-			EntityRemove(ent);
-			ballInPlay = NULL;
-			playSound(failSound);
-		}
-	}else if (ent->pos.y < 0){
-		if(ent->vel.y < 0){
-			ent->vel.y *= -1;
-		}
 	}
 }
 void EntityMovement(Entity *ent, double dt) {
 	ent->ang += ent->avel * dt;
 	ent->pos.x += ent->vel.x * dt;
 	ent->pos.y += ent->vel.y * dt;
-}
-void EntityThrust(Entity *ent, double mul, double dt) {
-	ent->vel.x += cos(ent->ang * (M_PI/180)) * ent->thrust * mul * dt;
-	ent->vel.y += sin(ent->ang * (M_PI/180)) * ent->thrust * mul * dt;
-	double speed = sqrt(ent->vel.x * ent->vel.x + ent->vel.y * ent->vel.y);
-	if (speed > ent->maxSpeed) {
-		ent->vel.x *= ent->maxSpeed / speed;
-		ent->vel.y *= ent->maxSpeed / speed;
-	}
 }
 Entity* TestCollision(Entity *ent) {
 	for(int i=0; i<entsC; i++) {
@@ -240,12 +221,6 @@ void EntityDamage(Entity *ent, int damage) {
 }
 void EntityDeathClock(Entity *ent, int delay) {
 	ent->deathTime = SDL_GetTicks() + delay;
-}
-
-void ShipBrake(Entity *ent, double dt) {
-	double diff = ent->thrust * 0.7 * dt;
-	ent->vel.x -= sign(ent->vel.x) * (diff > fabs(ent->vel.x) ? fabs(ent->vel.x) : diff);
-	ent->vel.y -= sign(ent->vel.y) * (diff > fabs(ent->vel.y) ? fabs(ent->vel.y) : diff);
 }
 
 double EntityDistance(Entity *ent1, Entity *ent2) {

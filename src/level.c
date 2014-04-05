@@ -28,6 +28,7 @@ void checkWinLoss(){
 		ballInPlay = NULL;
 		balls++;
 		
+		EntityGC();
 		curLevel++;
 		generateLevel(curLevel);
 	}

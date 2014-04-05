@@ -55,12 +55,10 @@ void EntityRemove(Entity *ent);
 void EntityDraw(Entity *ent, SDL_Rect *camera, double dt);
 void EntityUpdate(Entity *ent, double dt);
 void EntityMovement(Entity *ent, double dt);
-void EntityThrust(Entity *ent, double mul, double dt);
 void EntityGC();
 Entity* TestCollision(Entity *ent);
 void EntityDamage(Entity *ent, int damage);
 void EntityDeathClock(Entity * ent, int delay);
-void ShipBrake(Entity *ent, double dt);
 void GenBall(Entity *ent);
 double EntityDistance(Entity *ent1, Entity *ent2);
 
