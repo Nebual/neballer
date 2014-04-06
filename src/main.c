@@ -20,6 +20,7 @@ int entsC = 0;
 
 int WIDTH;
 int HEIGHT;
+int FIRSTLEVEL = 1;
 Entity *ply;
 int quit = 0;
 
@@ -35,7 +36,7 @@ int main(int argc, char *argv[]) {
 	initTextures();
 	//initHUD();
 
-	generateLevel(1);
+	generateLevel(FIRSTLEVEL);
 
 	ply = EntityCreate(TextureDataCreate("res/plank.png"), TYPE_PLAYER, WIDTH/2 - 50, HEIGHT - 36);
 	
@@ -133,9 +134,17 @@ int initWindow(SDL_Window **window, SDL_Renderer **renderer, int argc, char *arg
 	int useSoftwareAccel = 0;
 	int optionIndex = 0;
 	int c;
-	struct option longOptions[] = {{"software", no_argument, &useSoftwareAccel, 1},{"hardware", no_argument, &useSoftwareAccel, 0}};
-	while((c = getopt_long(argc, argv, "", longOptions, &optionIndex)) != -1) {
-		
+	struct option longOptions[] = {
+		{"software", no_argument, &useSoftwareAccel, 1},
+		{"hardware", no_argument, &useSoftwareAccel, 0},
+		{"level", required_argument, 0, 'l'}
+	};
+	while((c = getopt_long(argc, argv, "l", longOptions, &optionIndex)) != -1) {
+		switch(c) {
+			case 'l':
+				FIRSTLEVEL = atoi(optarg);
+				break;
+		}
 	}
 
 	for(int i=0;i<SDL_GetNumRenderDrivers();i++) {
