@@ -16,19 +16,13 @@ typedef enum {
 
 typedef struct entity {
 	Vector vel;
-	double ang;
-	double avel;
 	Vector pos;
-	double thrust;
-	double athrust;
-	double maxSpeed;
 	SDL_Rect rect;
 	SDL_Texture *texture;
 	Uint32 deathTime;
 	short int collision;
 	short int collisionSize;	// Used by anything involved with collisions. Define size for circle collision check 
 	short int damage;			// Projectiles
-	struct entity* owner;		// Projectiles: to avoid colliding with creator
 	
 	double animTime;
 	double animDuration;
@@ -36,7 +30,7 @@ typedef struct entity {
 
 	short int health;			// Ships
 
-	int type;
+	Type type;
 } Entity;
 
 typedef struct {
@@ -56,7 +50,7 @@ void initTextures();
 TextureData TextureDataCreate(char texturePath[]);
 Entity* EntityCreate(TextureData texdata, Type type, int x,int y);
 void EntityRemove(Entity *ent);
-void EntityDraw(Entity *ent, SDL_Rect *camera, double dt);
+void EntityDraw(Entity *ent, double dt);
 void EntityUpdate(Entity *ent, double dt);
 void EntityMovement(Entity *ent, double dt);
 void EntityGC();

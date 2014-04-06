@@ -7,7 +7,6 @@ extern Entity *ents[512];
 extern int entsC;
 
 extern int quit;
-extern SDL_Rect *camera;
 extern Entity *ply;
 
 extern int WIDTH;

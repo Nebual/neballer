@@ -39,7 +39,6 @@ int main(int argc, char *argv[]) {
 
 	ply = EntityCreate(TextureDataCreate("res/plank.png"), TYPE_PLAYER, WIDTH/2 - 50, HEIGHT - 36);
 	
-	SDL_Rect *camera = &(SDL_Rect) {0,0,0,0};
 	int lastFrame = curtime_u() - 1;
 	double dt;
 	while(!quit) {
@@ -68,7 +67,7 @@ int main(int argc, char *argv[]) {
 		drawBackground(renderer, dt);
 		for(int enti=0; enti<entsC; enti++) {
 			if(ents[enti] == NULL) continue;
-			EntityDraw(ents[enti], camera, dt);
+			EntityDraw(ents[enti], dt);
 		}
 		//drawHUD();
 

@@ -53,7 +53,4 @@ void handleKeyboard(double dt, Entity *ply) {
 	else if(keysPressed[SDL_SCANCODE_D] || keysPressed[SDL_SCANCODE_RIGHT]) {
 		ply->vel.x = 300;
 	}
-
-	//camera->x += keysPressed[SDL_SCANCODE_L] - keysPressed[SDL_SCANCODE_J];
-	//camera->y += keysPressed[SDL_SCANCODE_K] - keysPressed[SDL_SCANCODE_I];
 }

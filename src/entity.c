@@ -53,18 +53,12 @@ Entity* EntityCreate(TextureData texdata, Type type, int x, int y) {
 	this->texture = texdata.texture;
 	this->rect = (SDL_Rect) {x,y,texdata.w,texdata.h};
 	this->pos = (Vector) {x,y};
-	this->ang = 0;
 	this->vel = (Vector) {0,0};
-	this->avel = 0;
-	this->thrust = 175;
-	this->athrust = 100;
-	this->maxSpeed = 200;
 	this->type = type;
 	this->collision = 0;
 	this->collisionSize = (this->rect.w + this->rect.h) / 4; // Average of widthheight / 2
 	this->damage = 0;
 	this->health = 0;
-	this->owner = NULL;
 	this->deathTime = 0;
 	this->animTime = 0;
 	this->animDuration = 0;
@@ -79,10 +73,7 @@ Entity* EntityCreate(TextureData texdata, Type type, int x, int y) {
 			break;
 		case TYPE_BALL:
 			this->collision = 1;
-			this->thrust = 250;
-			this->maxSpeed = 800;
 			this->damage = 100;
-			this->collisionSize = min(this->rect.w, this->rect.h) / 2;
 			break;
 	}
 	
@@ -124,9 +115,9 @@ SDL_Rect* EntityGetFrame(Entity *ent, double dt) {
 	}
 	return NULL;
 }
-void EntityDraw(Entity *ent, SDL_Rect *camera, double dt) {
-	ent->rect.x = ent->pos.x - camera->x;
-	ent->rect.y = ent->pos.y - camera->y;
+void EntityDraw(Entity *ent, double dt) {
+	ent->rect.x = ent->pos.x;
+	ent->rect.y = ent->pos.y;
 	int ret;
 	//if(ent->type == TYPE_BALL || ent->type == TYPE_PLAYER) { // For some reason, it didn't like switching between the methods on a per-entity basis (using ent->ang != 0)
 	//	ret = SDL_RenderCopyEx(renderer, ent->texture, EntityGetFrame(ent, dt), &ent->rect, ent->ang, NULL, SDL_FLIP_NONE);
@@ -189,14 +180,13 @@ void EntityUpdate(Entity *ent, double dt) {
 	}
 }
 void EntityMovement(Entity *ent, double dt) {
-	ent->ang += ent->avel * dt;
 	ent->pos.x += ent->vel.x * dt;
 	ent->pos.y += ent->vel.y * dt;
 }
 Entity* TestCollision(Entity *ent) {
 	for(int i=0; i<entsC; i++) {
 		if(ents[i] == NULL || ents[i]->collision == 0 || ent == ents[i]) continue;
-		if(ent->owner == ents[i] || ents[i]->type == TYPE_BALL) continue;
+		if(ents[i]->type == TYPE_BALL) continue;
 		
 		// Rect collisions
 		double maxX = max(ents[i]->pos.x, ent->pos.x);
