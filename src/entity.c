@@ -15,14 +15,17 @@
 #include "level.h"
 
 TextureData ballTD;
-TextureData blockTD;
+TextureData blockTDs[127];
 TextureData explosionTD;
 static Mix_Chunk *bounceSound;
 static Mix_Chunk *hitSounds[3];
 static Mix_Chunk *failSound;
 void initTextures() {
 	ballTD = TextureDataCreate("res/ball.png");
-	blockTD = TextureDataCreate("res/block.png");
+	blockTDs[BLOCK_NORMAL] = TextureDataCreate("res/block.png");
+	blockTDs[BLOCK_SPEEDUP] = TextureDataCreate("res/block_speedup.png");
+	blockTDs[BLOCK_SLOWDOWN] = TextureDataCreate("res/block_slowdown.png");
+	blockTDs[BLOCK_RANDOM] = TextureDataCreate("res/block_random.png");
 
 	explosionTD.texture = IMG_LoadTexture(renderer, "res/explosion_50.png");
 	explosionTD.animMaxFrames = 36;
@@ -55,6 +58,7 @@ Entity* EntityCreate(TextureData texdata, Type type, int x, int y) {
 	this->pos = (Vector) {x,y};
 	this->vel = (Vector) {0,0};
 	this->type = type;
+	this->blockType = BLOCK_NONE;
 	this->collision = 0;
 	this->collisionSize = (this->rect.w + this->rect.h) / 4; // Average of widthheight / 2
 	this->damage = 0;
@@ -159,10 +163,23 @@ void EntityUpdate(Entity *ent, double dt) {
 				ent->vel.y = abs(ent->vel.y) * sign(ent->pos.y - hit->pos.y);
 				
 				if(hit->type == TYPE_PLAYER){
-					ent->vel.x += hit->vel.x * 0.1;
+					ent->vel.x += hit->vel.x * 0.25;
 					playSound(bounceSound);
 				} else if(hit->type == TYPE_BLOCK) {
 					playSound(hitSounds[rand() % 3]);
+					switch(hit->blockType) {
+						case BLOCK_SPEEDUP: 
+							ent->vel.x *= 1.25;
+							ent->vel.y *= 1.1;
+							break;
+						case BLOCK_SLOWDOWN: 
+							ent->vel.x /= 1.25;
+							ent->vel.y /= 1.1;
+							break;
+						case BLOCK_RANDOM:
+							ent->vel.x = ent->vel.x * 0.5 + random_range(-250, 250);
+							break;
+					}
 				}
 				EntityDamage(hit, ent->damage);
 			}

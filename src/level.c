@@ -47,8 +47,8 @@ int countBricks(){
 
 void generateLevel(int level) {
 	curLevel = level;
-	char filename[5];
-	char line[18];
+	char filename[5] = "";
+	char line[18] = "";
 	sprintf(filename, "levels/%d.lvl", level);
 	if(DEBUG) printf("Reading file %s\n", filename);
 	
@@ -61,10 +61,13 @@ void generateLevel(int level) {
 	for(int y=0; fgets(line, sizeof(line), fp); y++) {
 		if(DEBUG) printf("Read line: %s", line);
 		for(int x=0; x<16; x++) {
-			if(line[x] == '=') {
-				EntityCreate(blockTD, TYPE_BLOCK, x*50, y*25);
+			if(blockTDs[line[x]].texture != NULL) {
+				if(DEBUG) printf("Spawning block(%d,%c)\n", line[x], line[x]);
+				Entity *ent = EntityCreate(blockTDs[line[x]], TYPE_BLOCK, x*50, y*25);
+				ent->blockType = line[x];
 			}
 		}
+		memset(line, '\0', sizeof(line));
 	}
 }
 

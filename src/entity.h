@@ -14,6 +14,14 @@ typedef enum {
 	TYPE_MAX
 } Type;
 
+typedef enum {
+	BLOCK_NONE = ' ',
+	BLOCK_NORMAL = '=',
+	BLOCK_SPEEDUP = '+',
+	BLOCK_SLOWDOWN = '-',
+	BLOCK_RANDOM = 'X'
+} BlockType;
+
 typedef struct entity {
 	Vector vel;
 	Vector pos;
@@ -31,6 +39,7 @@ typedef struct entity {
 	short int health;			// Ships
 
 	Type type;
+	BlockType blockType;
 } Entity;
 
 typedef struct {
@@ -43,7 +52,7 @@ typedef struct {
 } TextureData;
 
 
-extern TextureData blockTD;
+extern TextureData blockTDs[127];
 
 
 void initTextures();
