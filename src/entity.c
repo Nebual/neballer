@@ -40,49 +40,49 @@ void initTextures() {
 	failSound = Mix_LoadWAV("res/sounds/fail.ogg");
 }
 
-TextureData TextureDataCreate(char texturePath[]) {
-	TextureData this = {NULL, 0, 0, 0, 0, 0};
-	this.texture = IMG_LoadTexture(renderer, texturePath);
-	if (!this.texture) {fprintf(stderr, "Couldn't load %s: %s\n", texturePath, SDL_GetError());}
-	SDL_SetTextureBlendMode(this.texture, SDL_BLENDMODE_BLEND);
-	SDL_QueryTexture(this.texture, NULL, NULL, &this.w, &this.h);
+TextureData TextureDataCreate(const char texturePath[]) {
+	TextureData data = {NULL, 0, 0, 0, 0, 0};
+	data.texture = IMG_LoadTexture(renderer, texturePath);
+	if (!data.texture) {fprintf(stderr, "Couldn't load %s: %s\n", texturePath, SDL_GetError());}
+	SDL_SetTextureBlendMode(data.texture, SDL_BLENDMODE_BLEND);
+	SDL_QueryTexture(data.texture, NULL, NULL, &data.w, &data.h);
 	
-	return this;
+	return data;
 }
 
 Entity* EntityCreate(TextureData texdata, Type type, int x, int y) {
-	Entity* this = (Entity *) malloc(sizeof(Entity));
+	Entity* ent = (Entity *) malloc(sizeof(Entity));
 	
-	this->texture = texdata.texture;
-	this->rect = (SDL_Rect) {x,y,texdata.w,texdata.h};
-	this->pos = (Vector) {x,y};
-	this->vel = (Vector) {0,0};
-	this->type = type;
-	this->blockType = BLOCK_NONE;
-	this->collision = 0;
-	this->collisionSize = (this->rect.w + this->rect.h) / 4; // Average of widthheight / 2
-	this->damage = 0;
-	this->health = 0;
-	this->deathTime = 0;
-	this->animTime = 0;
-	this->animDuration = 0;
-	this->animMaxFrames = 0;
+	ent->texture = texdata.texture;
+	ent->rect = (SDL_Rect) {x,y,texdata.w,texdata.h};
+	ent->pos = (Vector) {x,y};
+	ent->vel = (Vector) {0,0};
+	ent->type = type;
+	ent->blockType = BLOCK_NONE;
+	ent->collision = 0;
+	ent->collisionSize = (ent->rect.w + ent->rect.h) / 4; // Average of widthheight / 2
+	ent->damage = 0;
+	ent->health = 0;
+	ent->deathTime = 0;
+	ent->animTime = 0;
+	ent->animDuration = 0;
+	ent->animMaxFrames = 0;
 	switch(type) {
 		case TYPE_PLAYER:
-			this->collision = 1;
+			ent->collision = 1;
 			break;
 		case TYPE_BLOCK:
-			this->collision = 1;
-			this->health = 100;
+			ent->collision = 1;
+			ent->health = 100;
 			break;
 		case TYPE_BALL:
-			this->collision = 1;
-			this->damage = 100;
+			ent->collision = 1;
+			ent->damage = 100;
 			break;
 	}
 	
-	ents[entsC] = this; entsC++;
-	return this;
+	ents[entsC] = ent; entsC++;
+	return ent;
 }
 void EntityRemove(Entity *ent) {
 	// TODO: These should probably utilize an internal entID and rlID, but then GC would be harder

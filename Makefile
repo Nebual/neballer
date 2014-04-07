@@ -6,16 +6,17 @@ EXTRALIBS=-lSDL2_image -lm -lSDL2_mixer -lSDL2_ttf
 #SOURCES=src/entity.c src/input.c src/main.c src/system.c src/util.c src/hud.c
 SOURCES=src/entity.c src/input.c src/main.c src/level.c src/util.c
 
-C99MODE=-std=gnu99
 F=main
 CC=gcc
+C99MODE=-std=gnu99
+#CC=g++
 
 
 debug: EXTRACFLAGS +=-DDEBUG -g
 warn: EXTRACFLAGS += -Wall
 
 # Targetting Windows x64
-win32: CC:=x86_64-w64-mingw32-gcc
+win32: CC:=x86_64-w64-mingw32-$(CC)
 win32: EXECUTABLE:=$(EXECUTABLE).exe
 win32: CFLAGS=-I$(WINFOLDER)include/SDL2 -Dmain=SDL_main $(C99MODE) $(EXTRACFLAGS)
 win32: LIBS=-L$(WINFOLDER)lib -lmingw32 -lSDL2main -lSDL2 $(EXTRALIBS)
@@ -50,7 +51,7 @@ debug: run
 warn: all
 
 zip: win32
-	zip -r -u $(EXECUTABLE).zip $(EXECUTABLE).exe $(EXECUTABLE).bat $(EXECUTABLE)_update.exe Makefile res src drifter.bat
+	zip -r -u $(EXECUTABLE).zip $(EXECUTABLE).exe $(EXECUTABLE).bat $(EXECUTABLE)_update.exe Makefile res src levels *.dll README.md
 	upload $(EXECUTABLE).zip
 zipall: all
 	zip -r -u $(EXECUTABLE)_all.zip * -x *.zip

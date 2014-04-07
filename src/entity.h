@@ -56,7 +56,7 @@ extern TextureData blockTDs[127];
 
 
 void initTextures();
-TextureData TextureDataCreate(char texturePath[]);
+TextureData TextureDataCreate(const char texturePath[]);
 Entity* EntityCreate(TextureData texdata, Type type, int x,int y);
 void EntityRemove(Entity *ent);
 void EntityDraw(Entity *ent, double dt);

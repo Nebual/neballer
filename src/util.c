@@ -18,24 +18,24 @@ void fpsCounter() {
 	frames++;
 }
 
-inline short int sign(double i) {
+short int sign(double i) {
 	return i > 0 ? 1 : -1;
 }
 
-inline int min(int a, int b) {
+int min(int a, int b) {
 	return a < b ? a : b;
 }
-inline int max(int a, int b) {
+int max(int a, int b) {
 	return a > b ? a : b;
 }
 
-inline double clamp(double val, double min, double max) {
+double clamp(double val, double min, double max) {
 	if(val < min) return min;
 	if(val > max) return max;
 	return val;
 }
 
-inline double angnorm(double ang) {
+double angnorm(double ang) {
 	return fmod(ang + 180, 360) - 180;
 }
 

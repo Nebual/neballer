@@ -7,7 +7,7 @@ extern Entity *ballInPlay;
 
 void checkWinLoss();
 int countBricks();
-void generateLevel();
+void generateLevel(int level);
 void drawBackground(SDL_Renderer *renderer, double dt);
 
 #endif

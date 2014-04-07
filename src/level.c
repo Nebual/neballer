@@ -64,7 +64,7 @@ void generateLevel(int level) {
 			if(blockTDs[line[x]].texture != NULL) {
 				if(DEBUG) printf("Spawning block(%d,%c)\n", line[x], line[x]);
 				Entity *ent = EntityCreate(blockTDs[line[x]], TYPE_BLOCK, x*50, y*25);
-				ent->blockType = line[x];
+				ent->blockType = (BlockType) line[x];
 			}
 		}
 		memset(line, '\0', sizeof(line));
