@@ -29,7 +29,7 @@ void handleKeyboard(double dt, Entity *ply) {
 						break;
 					case SDLK_h:
 						if(DEBUG) printf("Starting GC, old entsC: %d", entsC);
-						EntityGC();
+						Entity::GC();
 						if(DEBUG) printf(", new entsC: %d\n", entsC);
 						break;
 				}

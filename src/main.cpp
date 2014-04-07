@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 
 	generateLevel(FIRSTLEVEL);
 
-	ply = EntityCreate(TextureDataCreate("res/plank.png"), TYPE_PLAYER, WIDTH/2 - 50, HEIGHT - 36);
+	ply = new Entity(TextureDataCreate("res/plank.png"), TYPE_PLAYER, WIDTH/2 - 50, HEIGHT - 36);
 	
 	int lastFrame = curtime_u() - 1;
 	double dt;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 		handleKeyboard(dt, ply);
 		for(int enti=0; enti<entsC; enti++) {
 			if(ents[enti] == NULL) continue;
-			EntityUpdate(ents[enti], dt);
+			ents[enti]->Update(dt);
 		}
 		
 		// ====================
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 		drawBackground(renderer, dt);
 		for(int enti=0; enti<entsC; enti++) {
 			if(ents[enti] == NULL) continue;
-			EntityDraw(ents[enti], dt);
+			ents[enti]->Draw(dt);
 		}
 		//drawHUD();
 
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 	// Destroy old textures
 	for(int enti=0; enti<entsC; enti++) {
 		if(ents[enti] == NULL) continue;
-		EntityRemove(ents[enti]);
+		delete ents[enti];
 	}
 
 	SDL_DestroyRenderer(renderer);

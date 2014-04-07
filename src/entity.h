@@ -22,7 +22,16 @@ typedef enum {
 	BLOCK_RANDOM = 'X'
 } BlockType;
 
-typedef struct entity {
+typedef struct {
+	SDL_Texture *texture;
+	short int animMaxFrames;
+	short int animWidth;
+	short int animDuration;
+	int w;
+	int h;
+} TextureData;
+
+struct Entity {
 	Vector vel;
 	Vector pos;
 	SDL_Rect rect;
@@ -40,34 +49,25 @@ typedef struct entity {
 
 	Type type;
 	BlockType blockType;
-} Entity;
-
-typedef struct {
-	SDL_Texture *texture;
-	short int animMaxFrames;
-	short int animWidth;
-	short int animDuration;
-	int w;
-	int h;
-} TextureData;
-
+	
+	Entity (TextureData texdata, Type type, int x, int y);
+	~Entity ();
+	void Draw(double dt);
+	void Update(double dt);
+	void Movement(double dt);
+	static void GC();
+	Entity* TestCollision();
+	void Damage(int damage);
+	void DeathClock(int delay);
+	double Distance(Entity *ent2);
+};
 
 extern TextureData blockTDs[127];
 
 
 void initTextures();
 TextureData TextureDataCreate(const char texturePath[]);
-Entity* EntityCreate(TextureData texdata, Type type, int x,int y);
-void EntityRemove(Entity *ent);
-void EntityDraw(Entity *ent, double dt);
-void EntityUpdate(Entity *ent, double dt);
-void EntityMovement(Entity *ent, double dt);
-void EntityGC();
-Entity* TestCollision(Entity *ent);
-void EntityDamage(Entity *ent, int damage);
-void EntityDeathClock(Entity * ent, int delay);
 void GenBall(Entity *ent);
-double EntityDistance(Entity *ent1, Entity *ent2);
 
 
 #endif
