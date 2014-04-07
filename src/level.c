@@ -47,7 +47,7 @@ int countBricks(){
 
 void generateLevel(int level) {
 	curLevel = level;
-	char filename[5] = "";
+	char filename[14] = "";
 	char line[18] = "";
 	sprintf(filename, "levels/%d.lvl", level);
 	if(DEBUG) printf("Reading file %s\n", filename);

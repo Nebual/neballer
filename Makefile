@@ -1,6 +1,6 @@
 EXECUTABLE=neballer
 EXTRAHEADERS=
-EXTRALIBS=-lSDL2_image -lm -lSDL2_mixer -lSDL2_ttf
+EXTRALIBS=-lSDL2_image -lm -lSDL2_mixer
 
 #SOURCES=src/main.c $(wildcard src/*.c)
 #SOURCES=src/entity.c src/input.c src/main.c src/system.c src/util.c src/hud.c
@@ -34,7 +34,7 @@ run: win32
 else
 # Building on Linux
 WINFOLDER:=/usr/x86_64-w64-mingw32/
-CFLAGS:=$(shell sdl2-config --cflags) $(C99MODE) $(EXTRACFLAGS)
+CFLAGS=$(shell sdl2-config --cflags) $(C99MODE) $(EXTRACFLAGS)
 LIBS=$(shell sdl2-config --libs) $(EXTRALIBS)
 
 all: compile
