@@ -1,6 +1,6 @@
 EXECUTABLE=neballer
 EXTRAHEADERS=
-EXTRALIBS=-lSDL2_image -lm -lSDL2_mixer
+EXTRALIBS=-lSDL2_image -lm -lSDL2_ttf -lSDL2_mixer
 
 #SOURCES=src/main.c $(wildcard src/*.c)
 #SOURCES=src/entity.c src/input.c src/main.c src/system.c src/util.c src/hud.c
@@ -8,7 +8,7 @@ SOURCES=src/entity.cpp src/input.cpp src/main.cpp src/level.cpp src/util.cpp
 
 F=main
 CC=g++
-
+C99MODE=-std=c++0x
 
 debug: EXTRACFLAGS +=-DDEBUG -g
 warn: EXTRACFLAGS += -Wall

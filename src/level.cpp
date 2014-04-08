@@ -6,6 +6,7 @@
 #include <SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "entity.h"
 #include "main.h"
@@ -76,3 +77,11 @@ void drawBackground(SDL_Renderer *renderer, double dt) {
 	SDL_SetRenderDrawColor(renderer, 20,20,20, SDL_ALPHA_OPAQUE);
 	SDL_RenderFillRect(renderer, &rect);
 }
+
+void drawHud(double dt){
+	char displayString[20];// = "Balls: ";
+	sprintf(displayString, "Balls: %d", balls);
+	displayText(0, 0, displayString);
+}
+
+

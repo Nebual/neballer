@@ -9,5 +9,6 @@ void checkWinLoss();
 int countBricks();
 void generateLevel(int level);
 void drawBackground(SDL_Renderer *renderer, double dt);
+void drawHud(double dt);
 
 #endif

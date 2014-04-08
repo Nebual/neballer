@@ -4,8 +4,21 @@
 #include <stdlib.h>
 
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 
+#include "entity.h"
+#include "main.h"
 #include "util.h"
+
+TTF_Font *monterey;
+
+SDL_Color WHITE;
+
+void initFonts(){
+	monterey = TTF_OpenFont("res/fonts/MontereyFLF.ttf", 16);
+	
+	WHITE = {255,255,255};
+}
 
 void fpsCounter() {	
 	static int curSec;
@@ -60,3 +73,19 @@ void playSound(Mix_Chunk *snd) {
 	#endif
 }
 
+void displayText(int x, int y, const char text[], SDL_Color color){
+	
+	SDL_Surface *text_surface;
+	if(!(text_surface=TTF_RenderText_Solid(monterey, text, color))) {
+		printf("TTF_Init: %s\n", TTF_GetError());
+	} else {
+		SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+		SDL_Rect rect = {x, y, 0, 0};
+		
+		SDL_QueryTexture(texture, NULL, NULL, &rect.w, &rect.h);
+		
+		int ret = SDL_RenderCopy(renderer, texture, NULL, &rect);
+		if(ret != 0) {printf("Render failed: %s\n", SDL_GetError());}
+		SDL_FreeSurface(text_surface);
+	}
+}

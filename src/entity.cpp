@@ -8,6 +8,7 @@
 #include <SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "util.h"
 #include "entity.h"
@@ -53,7 +54,7 @@ TextureData TextureDataCreate(const char texturePath[]) {
 Entity::Entity(TextureData texdata, Type type, int x, int y) {
 	this->texture = texdata.texture;
 	this->rect = (SDL_Rect) {x,y,texdata.w,texdata.h};
-	this->pos = (Vector) {x,y};
+	this->pos = (Vector) {(double) x,(double) y};
 	this->vel = (Vector) {0,0};
 	this->type = type;
 	this->blockType = BLOCK_NONE;

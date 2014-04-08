@@ -6,6 +6,7 @@
 #include <SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "util.h"
 #include "entity.h"
@@ -34,9 +35,11 @@ int main(int argc, char *argv[]) {
 	if(initWindow(&window, &renderer, argc, argv)) return 1;
 	initVariables(WIDTH, HEIGHT);
 	initTextures();
+	initFonts();
 	//initHUD();
 
 	generateLevel(FIRSTLEVEL);
+	
 
 	ply = new Entity(TextureDataCreate("res/plank.png"), TYPE_PLAYER, WIDTH/2 - 50, HEIGHT - 36);
 	
@@ -70,7 +73,7 @@ int main(int argc, char *argv[]) {
 			if(ents[enti] == NULL) continue;
 			ents[enti]->Draw(dt);
 		}
-		//drawHUD();
+		drawHud(dt);
 
 		// Flip render buffer
 		SDL_RenderPresent(renderer);
@@ -130,6 +133,11 @@ int initWindow(SDL_Window **window, SDL_Renderer **renderer, int argc, char *arg
 		return 1;
 	}
 	#endif
+	
+	if(TTF_Init()==-1) {
+		printf("TTF_Init: %s\n", TTF_GetError());
+		return 1;
+	}
 
 	int useSoftwareAccel = 0;
 	int optionIndex = 0;
@@ -139,6 +147,7 @@ int initWindow(SDL_Window **window, SDL_Renderer **renderer, int argc, char *arg
 		{"hardware", no_argument, &useSoftwareAccel, 0},
 		{"level", required_argument, 0, 'l'}
 	};
+
 	while((c = getopt_long(argc, argv, "l", longOptions, &optionIndex)) != -1) {
 		switch(c) {
 			case 'l':

@@ -1,6 +1,10 @@
 #ifndef __UTIL_H
 #define __UTIL_H
 
+extern TTF_Font *monterey;
+extern SDL_Color WHITE;
+
+void initFonts();
 int curtime();
 int curtime_u();
 short int sign(double i);
@@ -13,5 +17,6 @@ double angnorm(double ang);
 void fpsCounter();
 void playSound(Mix_Chunk *snd);
 int random_range(int min, int max);
+void displayText(int x, int y, const char text[], SDL_Color color=WHITE);
 
 #endif
