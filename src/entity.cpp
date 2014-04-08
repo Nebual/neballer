@@ -27,6 +27,7 @@ void initTextures() {
 	blockTDs[BLOCK_SPEEDUP] = TextureDataCreate("res/block_speedup.png");
 	blockTDs[BLOCK_SLOWDOWN] = TextureDataCreate("res/block_slowdown.png");
 	blockTDs[BLOCK_RANDOM] = TextureDataCreate("res/block_random.png");
+	blockTDs[BLOCK_TOUGH] = TextureDataCreate("res/block_tough.png");
 
 	explosionTD.texture = IMG_LoadTexture(renderer, "res/explosion_50.png");
 	explosionTD.animMaxFrames = 36;

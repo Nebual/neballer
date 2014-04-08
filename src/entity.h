@@ -19,7 +19,8 @@ typedef enum {
 	BLOCK_NORMAL = '=',
 	BLOCK_SPEEDUP = '+',
 	BLOCK_SLOWDOWN = '-',
-	BLOCK_RANDOM = 'X'
+	BLOCK_RANDOM = 'X',
+	BLOCK_TOUGH = '#'
 } BlockType;
 
 typedef struct {

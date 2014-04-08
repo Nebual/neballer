@@ -65,6 +65,12 @@ void generateLevel(int level) {
 				if(DEBUG) printf("Spawning block(%d,%c)\n", line[x], line[x]);
 				Entity *ent = new Entity(blockTDs[line[x]], TYPE_BLOCK, x*50, y*25);
 				ent->blockType = (BlockType) line[x];
+				switch(ent->blockType){
+					case BLOCK_TOUGH:
+						ent->health *= 2;
+						break;
+				}
+					
 			}
 		}
 		memset(line, '\0', sizeof(line));
