@@ -24,11 +24,10 @@ void checkWinLoss(){
 		Mix_Chunk *victorySound = Mix_LoadWAV("res/sounds/victory.ogg");
 		playSound(victorySound);
 		
-		EntityRemove(ballInPlay);
-		ballInPlay = NULL;
+		delete ballInPlay;
 		balls++;
 		
-		EntityGC();
+		Entity::GC();
 		curLevel++;
 		generateLevel(curLevel);
 	}
@@ -63,7 +62,7 @@ void generateLevel(int level) {
 		for(int x=0; x<16; x++) {
 			if(blockTDs[line[x]].texture != NULL) {
 				if(DEBUG) printf("Spawning block(%d,%c)\n", line[x], line[x]);
-				Entity *ent = EntityCreate(blockTDs[line[x]], TYPE_BLOCK, x*50, y*25);
+				Entity *ent = new Entity(blockTDs[line[x]], TYPE_BLOCK, x*50, y*25);
 				ent->blockType = (BlockType) line[x];
 			}
 		}

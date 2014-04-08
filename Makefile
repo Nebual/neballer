@@ -4,12 +4,10 @@ EXTRALIBS=-lSDL2_image -lm -lSDL2_mixer
 
 #SOURCES=src/main.c $(wildcard src/*.c)
 #SOURCES=src/entity.c src/input.c src/main.c src/system.c src/util.c src/hud.c
-SOURCES=src/entity.c src/input.c src/main.c src/level.c src/util.c
+SOURCES=src/entity.cpp src/input.cpp src/main.cpp src/level.cpp src/util.cpp
 
 F=main
-CC=gcc
-C99MODE=-std=gnu99
-#CC=g++
+CC=g++
 
 
 debug: EXTRACFLAGS +=-DDEBUG -g
@@ -60,7 +58,7 @@ zipall: all
 
 compile: 
 	@echo
-	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(SOURCES) $(LIBS)
+	$(CC) -g $(CFLAGS) -o $(EXECUTABLE) $(SOURCES) $(LIBS)
 headers:
 	makeheaders $(EXTRAHEADERS) $(SOURCES)
 
