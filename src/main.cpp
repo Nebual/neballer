@@ -124,7 +124,7 @@ int initWindow(SDL_Window **window, SDL_Renderer **renderer, int argc, char *arg
 		fprintf(stderr, "Audio Init failed: %s\n", Mix_GetError());
 		return 1;
 	}
-	int mixFlags = MIX_INIT_MP3|MIX_INIT_OGG;
+	int mixFlags = MIX_INIT_OGG;
 	if(Mix_Init(mixFlags) != mixFlags) {
 		fprintf(stderr, "Audio Init2 failed: %s\n", Mix_GetError());
 		return 1;
