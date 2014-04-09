@@ -10,14 +10,12 @@
 #include "main.h"
 #include "util.h"
 
-TTF_Font *monterey;
-TTF_Font *blazed;
+TTF_Font *prototype;
 
 SDL_Color WHITE;
 
 void initFonts(){
-	monterey = TTF_OpenFont("res/fonts/MontereyFLF.ttf", 16);
-	blazed = TTF_OpenFont("res/fonts/Blazed.ttf", 24);
+	prototype = TTF_OpenFont("res/fonts/Prototype.ttf", 24);
 	
 	WHITE = {255,255,255};
 }
@@ -89,7 +87,7 @@ void displayText(int x, int y, const char text[], SDL_Color color){
 
 SDL_Texture* readyText(int x, int y, const char text[], SDL_Color color){
 	SDL_Surface *text_surface;
-	if(!(text_surface=TTF_RenderText_Solid(blazed, text, color))) {
+	if(!(text_surface=TTF_RenderText_Solid(prototype, text, color))) {
 		printf("TTF_Init: %s\n", TTF_GetError());
 		return 0;
 	} else {

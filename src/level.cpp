@@ -18,11 +18,14 @@ int balls = 3;
 Entity *ballInPlay;
 int displayWinText;
 int displayLevelText;
+char menuMode[50];
 
 void checkWinLoss(){
+	if(menuMode[0] != '\0'){return;}
+	
 	if(balls <= 0 && ballInPlay == NULL){
-		printf("You've dropped the barr far too many times to bother trying again. You lose!\n");
-		quit = 1;
+		//printf("You've dropped the barr far too many times to bother trying again. You lose!\n");
+		strcpy(menuMode, "GAME OVER! Play again? Y/N");
 	} else if (! blocksRemain()){
 		Mix_Chunk *victorySound = Mix_LoadWAV("res/sounds/victory.ogg");
 		playSound(victorySound);
@@ -33,11 +36,6 @@ void checkWinLoss(){
 		displayLevelText = 1;
 		TimerCreate(0, 3000, 1, [](){displayLevelText = 0;});		
 		
-		delete ballInPlay;
-		ballInPlay = NULL;
-		balls=3;
-		
-		Entity::GC();
 		curLevel++;
 		generateLevel(curLevel);
 	}
@@ -54,6 +52,20 @@ int blocksRemain(){
 }
 
 void generateLevel(int level) {
+	strcpy(menuMode, "");
+	
+	delete ballInPlay;
+	ballInPlay = NULL;
+	balls=3;
+	
+	for(int enti=0; enti<entsC; enti++) {
+		if(ents[enti] == NULL) continue;
+		if(ents[enti]->type == TYPE_BLOCK){
+			delete ents[enti];
+		}
+	}
+	Entity::GC();
+	
 	curLevel = level;
 	char filename[14] = "";
 	char line[18] = "";
@@ -62,8 +74,9 @@ void generateLevel(int level) {
 	
 	FILE *fp = fopen(filename, "r");
 	if(!fp) {
-		printf("%s not found, you've completed the last level!\n", filename);
-		quit = 1;
+		//printf("%s not found, you've completed the last level!\n", filename);
+		strcpy(menuMode, "YOU DEFEATED! Play again? Y/N");
+		return;
 	}
 	
 	for(int y=0; fgets(line, sizeof(line), fp); y++) {
@@ -103,6 +116,9 @@ void drawHud(double dt){
 		char levelName[20];
 		sprintf(levelName, "Level %d", curLevel);
 		displayTextCentered(400, 200, levelName);
+	}
+	if(menuMode[0] != '\0'){
+		displayTextCentered(400, 200, menuMode);
 	}
 }
 

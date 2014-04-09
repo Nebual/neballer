@@ -12,6 +12,7 @@
 #include "entity.h"
 #include "main.h"
 #include "input.h"
+#include "level.h"
 
 void handleKeyboard(double dt, Entity *ply) {
 	static int keysPressed[255];
@@ -19,6 +20,9 @@ void handleKeyboard(double dt, Entity *ply) {
 	static SDL_Event keyevent;
 	while(SDL_PollEvent(&keyevent)) {
 		switch(keyevent.type) {
+			case SDL_QUIT:
+				quit = 1;
+				return;
 			case SDL_KEYDOWN:
 				keysPressed[keyevent.key.keysym.scancode] = 1;
 				if(DEBUG) printf("Key pressed: %d\n", keyevent.key.keysym.scancode);
@@ -32,6 +36,19 @@ void handleKeyboard(double dt, Entity *ply) {
 						if(DEBUG) printf("Starting GC, old entsC: %d", entsC);
 						Entity::GC();
 						if(DEBUG) printf(", new entsC: %d\n", entsC);
+						break;
+					case SDLK_n:
+						if(menuMode[0] != '\0'){
+							quit = 1;
+							return;
+						}
+						break;
+					case SDLK_y:
+						if(menuMode[0] != '\0'){
+							curLevel = 1;
+							generateLevel(curLevel);
+							return;
+						}
 						break;
 				}
 				break;

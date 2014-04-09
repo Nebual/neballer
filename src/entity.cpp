@@ -243,7 +243,7 @@ double Entity::Distance(Entity *ent2) {
 }
 
 void GenBall(Entity *ent){
-	if(ballInPlay != NULL || balls < 0) return;
+	if(ballInPlay != NULL || balls <= 0) return;
 	ballInPlay = new Entity(ballTD, TYPE_BALL, ent->pos.x, (ent->pos.y - 50));
 	ballInPlay->vel.x = random_range(-150, 150);
 	ballInPlay->vel.y = -300;

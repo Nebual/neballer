@@ -1,7 +1,6 @@
 #ifndef __UTIL_H
 #define __UTIL_H
 
-extern TTF_Font *monterey;
 extern SDL_Color WHITE;
 
 void initFonts();
