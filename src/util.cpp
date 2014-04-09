@@ -11,11 +11,13 @@
 #include "util.h"
 
 TTF_Font *monterey;
+TTF_Font *blazed;
 
 SDL_Color WHITE;
 
 void initFonts(){
 	monterey = TTF_OpenFont("res/fonts/MontereyFLF.ttf", 16);
+	blazed = TTF_OpenFont("res/fonts/Blazed.ttf", 24);
 	
 	WHITE = {255,255,255};
 }
@@ -74,19 +76,40 @@ void playSound(Mix_Chunk *snd) {
 }
 
 void displayText(int x, int y, const char text[], SDL_Color color){
-	
-	SDL_Surface *text_surface;
-	if(!(text_surface=TTF_RenderText_Solid(monterey, text, color))) {
-		printf("TTF_Init: %s\n", TTF_GetError());
-	} else {
-		SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+	if(SDL_Texture* texture = readyText(x, y, text, color)){
 		SDL_Rect rect = {x, y, 0, 0};
-		
 		SDL_QueryTexture(texture, NULL, NULL, &rect.w, &rect.h);
 		
 		int ret = SDL_RenderCopy(renderer, texture, NULL, &rect);
 		if(ret != 0) {printf("Render failed: %s\n", SDL_GetError());}
+		
+	}
+
+}
+
+SDL_Texture* readyText(int x, int y, const char text[], SDL_Color color){
+	SDL_Surface *text_surface;
+	if(!(text_surface=TTF_RenderText_Solid(blazed, text, color))) {
+		printf("TTF_Init: %s\n", TTF_GetError());
+		return 0;
+	} else {
+		SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, text_surface);
 		SDL_FreeSurface(text_surface);
+		
+		return texture;
+	}	
+}
+
+void displayTextCentered(int x, int y, const char text[], SDL_Color color){
+	if(SDL_Texture* texture = readyText(x, y, text, color)){
+		SDL_Rect rect = {x, y, 0, 0};
+		SDL_QueryTexture(texture, NULL, NULL, &rect.w, &rect.h);
+		
+		rect.x -= rect.w/2;
+		
+		int ret = SDL_RenderCopy(renderer, texture, NULL, &rect);
+		if(ret != 0) {printf("Render failed: %s\n", SDL_GetError());}
+		
 	}
 }
 

@@ -40,7 +40,6 @@ int main(int argc, char *argv[]) {
 
 	generateLevel(FIRSTLEVEL);
 	
-
 	ply = new Entity(TextureDataCreate("res/plank.png"), TYPE_PLAYER, WIDTH/2 - 50, HEIGHT - 36);
 	
 	int lastFrame = curtime_u() - 1;

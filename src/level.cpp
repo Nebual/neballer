@@ -16,14 +16,17 @@
 int curLevel;
 int balls = 3;
 Entity *ballInPlay;
+int displayWinText=1;
 
 void checkWinLoss(){
 	if(balls <= 0 && ballInPlay == NULL){
-		printf("You've dropped the bar far too many times to bother trying again. You lose!\n");
+		printf("You've dropped the barr far too many times to bother trying again. You lose!\n");
 		quit = 1;
-	} else if (countBricks() == 0){
+	} else if (! blocksRemain()){
 		Mix_Chunk *victorySound = Mix_LoadWAV("res/sounds/victory.ogg");
 		playSound(victorySound);
+		displayWinText = 1;
+		TimerCreate(0, 5000, 1, [](){displayWinText = 0;});
 		
 		delete ballInPlay;
 		balls++;
@@ -34,15 +37,14 @@ void checkWinLoss(){
 	}
 }
 
-int countBricks(){
-	int bricks = 0;
+int blocksRemain(){
 	for(int i=0; i < entsC; i++){
 		if(ents[i] == NULL) continue;
 		if(ents[i]->type == TYPE_BLOCK){
-			bricks++;
+			return 1;
 		}
 	}
-	return bricks;
+	return 0;
 }
 
 void generateLevel(int level) {
@@ -88,6 +90,9 @@ void drawHud(double dt){
 	char displayString[20];// = "Balls: ";
 	sprintf(displayString, "Balls: %d", balls);
 	displayText(0, 0, displayString);
+	if(displayWinText){
+		displayTextCentered(400, 100, "YOU DEFEATED");
+	}
 }
 
 

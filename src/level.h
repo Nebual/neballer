@@ -6,7 +6,7 @@ extern int balls;
 extern Entity *ballInPlay;
 
 void checkWinLoss();
-int countBricks();
+int blocksRemain();
 void generateLevel(int level);
 void drawBackground(SDL_Renderer *renderer, double dt);
 void drawHud(double dt);
