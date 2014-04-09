@@ -89,3 +89,40 @@ void displayText(int x, int y, const char text[], SDL_Color color){
 		SDL_FreeSurface(text_surface);
 	}
 }
+
+Timer* timers[256]; int timersC = 0;
+
+void TimerRun() {
+	Uint32 curtimeMS = SDL_GetTicks();
+	for(int i=0; i<timersC; i++) {
+		if(timers[i] == NULL) continue;
+		if(timers[i]->endTime <= curtimeMS) {
+			timers[i]->callback();
+			timers[i]->endTime = curtimeMS + timers[i]->delay;
+			if(timers[i]->reps != 0) { // reps == 0 means "do forever"
+				timers[i]->reps--;
+				if(timers[i]->reps <= 0) {timers[i] = NULL;}
+			}
+		}
+	}
+}
+
+void TimerCreate(int id, Uint32 delay, short int reps, void (*callback)()) {
+	//Timer timer = {id, SDL_GetTicks() + delay, delay, reps, callback};
+	Timer *timer = (Timer*) malloc(sizeof(Timer));
+	timer->id = id;
+	timer->endTime = SDL_GetTicks() + delay;
+	timer->delay = delay;
+	timer->reps = reps;
+	timer->callback = callback;
+	timers[timersC] = timer; timersC++;
+}
+void TimerDestroy(int id) {
+	for(int i=0; i<timersC; i++) {
+		if(timers[i] == NULL) continue;
+		if(timers[i]->id == id) {
+			timers[i] = NULL;
+			break;
+		}
+	}
+}

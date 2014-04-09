@@ -56,6 +56,7 @@ int main(int argc, char *argv[]) {
 
 		// ===================
 		// Update
+		TimerRun();
 		handleKeyboard(dt, ply);
 		for(int enti=0; enti<entsC; enti++) {
 			if(ents[enti] == NULL) continue;
