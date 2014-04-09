@@ -16,7 +16,8 @@
 int curLevel;
 int balls = 3;
 Entity *ballInPlay;
-int displayWinText=1;
+int displayWinText;
+int displayLevelText;
 
 void checkWinLoss(){
 	if(balls <= 0 && ballInPlay == NULL){
@@ -25,11 +26,16 @@ void checkWinLoss(){
 	} else if (! blocksRemain()){
 		Mix_Chunk *victorySound = Mix_LoadWAV("res/sounds/victory.ogg");
 		playSound(victorySound);
+		
 		displayWinText = 1;
-		TimerCreate(0, 5000, 1, [](){displayWinText = 0;});
+		TimerCreate(0, 3000, 1, [](){displayWinText = 0;});
+		
+		displayLevelText = 1;
+		TimerCreate(0, 3000, 1, [](){displayLevelText = 0;});		
 		
 		delete ballInPlay;
-		balls++;
+		ballInPlay = NULL;
+		balls=3;
 		
 		Entity::GC();
 		curLevel++;
@@ -91,7 +97,12 @@ void drawHud(double dt){
 	sprintf(displayString, "Balls: %d", balls);
 	displayText(0, 0, displayString);
 	if(displayWinText){
-		displayTextCentered(400, 100, "YOU DEFEATED");
+		displayTextCentered(400, 100, "GOOD JOB!");
+	}
+	if(displayLevelText){
+		char levelName[20];
+		sprintf(levelName, "Level %d", curLevel);
+		displayTextCentered(400, 200, levelName);
 	}
 }
 
