@@ -4,7 +4,7 @@
 extern int curLevel;
 extern int balls;
 extern Entity *ballInPlay;
-extern char menuMode[];
+extern int menuMode;
 
 void checkWinLoss();
 int blocksRemain();

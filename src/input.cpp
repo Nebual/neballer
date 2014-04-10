@@ -38,13 +38,13 @@ void handleKeyboard(double dt, Entity *ply) {
 						if(DEBUG) printf(", new entsC: %d\n", entsC);
 						break;
 					case SDLK_n:
-						if(menuMode[0] != '\0'){
+						if(menuMode){
 							quit = 1;
 							return;
 						}
 						break;
 					case SDLK_y:
-						if(menuMode[0] != '\0'){
+						if(menuMode){
 							curLevel = 1;
 							generateLevel(curLevel);
 							return;

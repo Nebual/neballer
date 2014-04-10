@@ -18,26 +18,29 @@ int balls = 3;
 Entity *ballInPlay;
 int displayWinText;
 int displayLevelText;
-char menuMode[50];
+int menuMode;
+int wonGame;
 
 void checkWinLoss(){
-	if(menuMode[0] != '\0'){return;}
+	if(menuMode){return;}
 	
 	if(balls <= 0 && ballInPlay == NULL){
 		//printf("You've dropped the barr far too many times to bother trying again. You lose!\n");
-		strcpy(menuMode, "GAME OVER! Play again? Y/N");
+		menuMode = 1;
 	} else if (! blocksRemain()){
 		Mix_Chunk *victorySound = Mix_LoadWAV("res/sounds/victory.ogg");
 		playSound(victorySound);
 		
+		curLevel++;
+		generateLevel(curLevel);
+		
 		displayWinText = 1;
 		TimerCreate(0, 3000, 1, [](){displayWinText = 0;});
 		
-		displayLevelText = 1;
-		TimerCreate(0, 3000, 1, [](){displayLevelText = 0;});		
-		
-		curLevel++;
-		generateLevel(curLevel);
+		if(! menuMode){
+			displayLevelText = 1;
+			TimerCreate(0, 3000, 1, [](){displayLevelText = 0;});		
+		}
 	}
 }
 
@@ -52,7 +55,7 @@ int blocksRemain(){
 }
 
 void generateLevel(int level) {
-	strcpy(menuMode, "");
+	menuMode = 0;
 	
 	delete ballInPlay;
 	ballInPlay = NULL;
@@ -75,7 +78,8 @@ void generateLevel(int level) {
 	FILE *fp = fopen(filename, "r");
 	if(!fp) {
 		//printf("%s not found, you've completed the last level!\n", filename);
-		strcpy(menuMode, "YOU DEFEATED! Play again? Y/N");
+		menuMode = 1;
+		wonGame = 1;
 		return;
 	}
 	
@@ -117,8 +121,12 @@ void drawHud(double dt){
 		sprintf(levelName, "Level %d", curLevel);
 		displayTextCentered(400, 200, levelName);
 	}
-	if(menuMode[0] != '\0'){
-		displayTextCentered(400, 200, menuMode);
+	if(menuMode){
+		if(wonGame){
+			displayTextCentered(400, 200, "YOU DEFEATED! Play again? Y/N");
+		}else{
+		displayTextCentered(400, 200, "GAME OVER! Play again? Y/N");
+		}
 	}
 }
 

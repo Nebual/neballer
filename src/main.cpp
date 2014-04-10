@@ -168,7 +168,7 @@ int initWindow(SDL_Window **window, SDL_Renderer **renderer, int argc, char *arg
 		printf("\n");*/
 	}
 	
-	*window = SDL_CreateWindow("Neballer", SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, 0); // SDL_WINDOW_BORDERLESS
+	*window = SDL_CreateWindow("Neballer", SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_FULLSCREEN_DESKTOP); // SDL_WINDOW_BORDERLESS
 											//  -1 for first rendering driver that fits the flags
 	if(useSoftwareAccel || (*renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)) == NULL) {
 		fprintf(stderr, "Loading hardware acceleration failed. Using software fallback...\n");
